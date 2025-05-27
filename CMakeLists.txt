@@ -38,6 +38,7 @@ pico_sdk_init()
 add_executable(picOS
     picOS.c
     drivers/st7789_driver.c
+    drivers/button_driver.c
     )
 
 # pull in common dependencies

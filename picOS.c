@@ -1,9 +1,16 @@
 #include "pico/stdlib.h"
 #include "drivers/st7789_driver.h"
+#include "drivers/button_driver.h"
+
+InputState mouse_position;
 
 int main()
 {
+    button_init();
     st7789_init();
+
+    mouse_position.vertical = NUM_ROWS / 2;
+    mouse_position.horizontal = NUM_COLS / 2;
 
     clear_framebuffer(0, 0, 0);
 
@@ -11,6 +18,8 @@ int main()
     
     while (true)
     {
+        // Draw animation
+
         for (size_t row = 0; row < NUM_ROWS; row++)
         {
             for (size_t col = 0; col < NUM_COLS; col++)
@@ -24,6 +33,18 @@ int main()
                 write_pixel_to_framebuffer(row, col, r, g, b);
             }
         }
+
+        // Move mouse
+
+        InputState input = get_input_state();
+        mouse_position.horizontal += input.horizontal;
+        mouse_position.vertical += input.vertical;
+        if (mouse_position.vertical >= NUM_ROWS) mouse_position.vertical = NUM_ROWS - 1;
+        else if (mouse_position.vertical < 0) mouse_position.vertical = 0;
+        if (mouse_position.horizontal >= NUM_COLS) mouse_position.horizontal = NUM_COLS - 1;
+        else if (mouse_position.horizontal < 0) mouse_position.horizontal = 0;
+
+        write_pixel_to_framebuffer(mouse_position.vertical, mouse_position.horizontal, 0, 0, 0);
 
         draw_framebuffer();
 
