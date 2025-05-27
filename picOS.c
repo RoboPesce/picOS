@@ -1,5 +1,5 @@
 #include "pico/stdlib.h"
-#include "st7789_driver.h"
+#include "drivers/st7789_driver.h"
 
 int main()
 {

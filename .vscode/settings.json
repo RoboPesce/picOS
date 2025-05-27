@@ -38,6 +38,7 @@
     "raspberry-pi-pico.ninjaPath": "${HOME}/.pico-sdk/ninja/v1.12.1/ninja",
     "files.associations": {
         "random": "c",
-        "cstdint": "c"
+        "cstdint": "c",
+        "button_driver.h": "c"
     }
 }
