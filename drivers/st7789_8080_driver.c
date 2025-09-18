@@ -32,6 +32,13 @@ void write_data(const uint8_t *data, size_t len);
 static inline void st7789_8080_program_init(PIO pio, uint sm, uint offset,
                                             uint data_pin_base, uint wr_pin);
 
+uint16_t rgb888_to_565(uint8_t r, uint8_t g, uint8_t b)
+{
+    uint16_t color = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
+    uint16_t endian = ((color >> 8) & 0x00FF) | ((color << 8) & 0xFF00); // The masks should be redundant, but we want to be sure
+    return endian;
+}
+
 void st7789_8080_init() 
 {
     // Initialize PIO
@@ -90,6 +97,24 @@ void st7789_8080_init()
     // No need to configure MADCTL, defaults are sufficient
     write_command(0x36); // MADCTL
     write_data_single(0x00); // Bit 3 = 0: RGB order
+}
+
+void draw_framebuffer()
+{
+    write_command(0x2C); // RAMWR
+    write_data((const uint8_t *)framebuffer, FRAMEBUFFER_SIZE_BYTES);
+}
+
+void write_pixel_to_framebuffer(uint16_t row, uint16_t col, uint8_t r, uint8_t g, uint8_t b)
+{
+    size_t index = NUM_COLS * row + col;
+    framebuffer[index] = rgb888_to_565(r, g, b);
+}
+
+void clear_framebuffer(uint8_t r, uint8_t g, uint8_t b)
+{
+    uint16_t clear_color = rgb888_to_565(r, g, b);
+    for (size_t i = 0; i < NUM_PIXELS; i++) framebuffer[i] = clear_color;
 }
 
 void write_command(uint8_t cmd)

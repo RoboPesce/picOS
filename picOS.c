@@ -1,12 +1,12 @@
 #include "pico/stdlib.h"
-#include "drivers/st7789_driver.h"
+#include "drivers/st7789_8080_driver.h"
 #include "drivers/button_driver.h"
 
 InputState mouse_position;
 
 int main()
 {
-    button_init();
+    //button_init();
     st7789_init();
 
     mouse_position.vertical = NUM_ROWS / 2;
