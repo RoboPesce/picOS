@@ -1,0 +1,13 @@
+.program st7789_8080
+
+; We'll use 8 pins for data, and WR pin via sideset.
+.side_set 1
+; The ".side_set 1" means: reserve 1 extra bit per instruction to drive a side pin.
+; We'll assign WR as that pin when we initialize in C.
+
+.wrap_target
+    pull      block    ; pull a word from the TX FIFO (from C or DMA). "block" means wait if empty.
+    out pins, 8        ; shift 8 bits from the OSR (output shift register) to the data pins
+    nop       side 0   ; output low on WR (assert)
+    nop       side 1   ; output high on WR (deassert)
+.wrap
