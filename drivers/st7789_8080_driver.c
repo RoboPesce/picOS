@@ -46,7 +46,7 @@ void st7789_8080_init()
     st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, WR_PIN);
 
     // Initialize pins
-    for (int pin = DATA_PIN_BASE; i < DATA_PIN_BASE + DATA_PIN_COUNT; ++i) 
+    for (int pin = DATA_PIN_BASE; pin < DATA_PIN_BASE + DATA_PIN_COUNT; ++pin) 
     {
         gpio_init(pin);
         gpio_set_dir(pin, GPIO_OUT);

@@ -7,7 +7,7 @@ InputState mouse_position;
 int main()
 {
     //button_init();
-    st7789_init();
+    st7789_8080_init();
 
     mouse_position.vertical = NUM_ROWS / 2;
     mouse_position.horizontal = NUM_COLS / 2;

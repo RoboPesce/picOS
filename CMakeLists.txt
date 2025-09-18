@@ -41,10 +41,10 @@ add_executable(picOS
     drivers/button_driver.c
     )
 
-pico_generate_pio_header(picOS drivers/st7789_8080.pio)
+pico_generate_pio_header(picOS ${CMAKE_CURRENT_LIST_DIR}/drivers/st7789_8080.pio)
 
 # pull in common dependencies
-target_link_libraries(picOS pico_stdlib hardware_spi)
+target_link_libraries(picOS pico_stdlib hardware_pio hardware_dma)
 
 if (PICO_CYW43_SUPPORTED)
     target_link_libraries(picOS pico_cyw43_arch_none)
