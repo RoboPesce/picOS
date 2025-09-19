@@ -1,4 +1,5 @@
 #include "pico/stdlib.h"
+#include <stdio.h>
 #include "drivers/st7789_8080_driver.h"
 #include "drivers/button_driver.h"
 
@@ -6,6 +7,7 @@ InputState mouse_position;
 
 int main()
 {
+    stdio_init_all();
     //button_init();
     st7789_8080_init();
 
@@ -21,7 +23,7 @@ int main()
         clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
 
         // Move mouse
-
+        /*
         InputState input = get_input_state();
         mouse_position.horizontal += input.horizontal;
         mouse_position.vertical += input.vertical;
@@ -31,10 +33,14 @@ int main()
         else if (mouse_position.horizontal < 0) mouse_position.horizontal = 0;
 
         write_pixel_to_framebuffer(mouse_position.vertical, mouse_position.horizontal, 0, 0, 0);
+        */
 
         draw_framebuffer();
 
         color_shift++;
+
+        //static uint8_t counter = 0;
+        //if ((counter += 7) % 9 == 0) printf("Colorshift: %d\n", color_shift);
     }
 
     /*

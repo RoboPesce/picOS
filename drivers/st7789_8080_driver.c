@@ -89,7 +89,7 @@ void st7789_8080_init()
     write_command(0x3A); // COLMOD
     write_data_single(0x05); // Use 16 bit RGB565 format
 
-    write_command(0x21); // INVON, for testing
+    // write_command(0x21); // INVON, for testing
 
     // No need to configure CASET/RASET as they default to the whole screen.
     // Future todo: only draw updated surface?
@@ -132,6 +132,14 @@ void write_data_single(uint8_t data)
 void write_data(const uint8_t *data, size_t len)
 {
     gpio_put(DC_PIN, 1);
+
+    // TESTING START
+
+    for (size_t i = 0; i < len; ++i) pio_sm_put_blocking(pio, sm, data[i]);
+
+    return;
+
+    // TESTING END
 
     dma_channel_config c = dma_channel_get_default_config(dma_chan);
     channel_config_set_transfer_data_size(&c, DMA_SIZE_8);

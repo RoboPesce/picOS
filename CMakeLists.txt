@@ -43,6 +43,9 @@ add_executable(picOS
 
 pico_generate_pio_header(picOS ${CMAKE_CURRENT_LIST_DIR}/drivers/st7789_8080.pio)
 
+pico_enable_stdio_usb(picOS 1)
+pico_enable_stdio_uart(picOS 0)
+
 # pull in common dependencies
 target_link_libraries(picOS pico_stdlib hardware_pio hardware_dma)
 

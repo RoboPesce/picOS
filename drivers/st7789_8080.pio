@@ -5,7 +5,7 @@
 
 .wrap_target
     pull      block side 1   ; pull a word from the TX FIFO (from C or DMA). "block" means wait if empty.
-    out pins, 8     side 1   ; shift 8 bits from the OSR (output shift register) to the data pins
+    out pins, 8     side 0   ; shift 8 bits from the OSR (output shift register) to the data pins
     nop             side 0   ; output low on WR (assert)
     nop             side 1   ; output high on WR (deassert)
 .wrap
