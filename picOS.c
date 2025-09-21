@@ -25,8 +25,8 @@ int main()
     {
         // Draw animation
 
-        //clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
-        clear_framebuffer(255, 255, 255);
+        clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
+        //clear_framebuffer(255, 255, 255);
 
         // Move mouse
         /*

@@ -38,7 +38,7 @@ pico_sdk_init()
 add_executable(picOS
     picOS.c
     drivers/st7789_8080_driver.c
-    drivers/button_driver.c
+    drivers/test/button_driver.c
     )
 
 pico_generate_pio_header(picOS ${CMAKE_CURRENT_LIST_DIR}/drivers/st7789_8080.pio)

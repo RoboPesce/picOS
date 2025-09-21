@@ -29,9 +29,6 @@ void write_command(uint8_t cmd);
 void write_data_single(uint8_t data);
 void write_data(const uint8_t *data, size_t len);
 
-static inline void st7789_8080_program_init(PIO pio, uint sm, uint offset,
-                                            uint data_pin_base, uint wr_pin);
-
 uint16_t rgb888_to_565(uint8_t r, uint8_t g, uint8_t b)
 {
     uint16_t color = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
@@ -43,7 +40,7 @@ void st7789_8080_init()
 {
     // Initialize PIO
     uint offset = pio_add_program(pio, &st7789_8080_program);
-    st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, WR_PIN);
+    st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, DATA_PIN_COUNT, WR_PIN, PIO_CLOCK_DIVIDER);
 
     /*
     // Initialize pins
@@ -162,32 +159,4 @@ void write_data(const uint8_t *data, size_t len)
 
     // Optionally: wait for completion
     dma_channel_wait_for_finish_blocking(dma_chan);
-}
-
-static inline void st7789_8080_program_init(PIO pio, uint sm, uint offset,
-                                            uint data_pin_base, uint wr_pin)
-{
-    // Configure 8 consecutive pins for data
-    pio_sm_set_consecutive_pindirs(pio, sm, data_pin_base, DATA_PIN_COUNT, true);
-
-    // Configure sideset pin (WR)
-    pio_sm_set_consecutive_pindirs(pio, sm, wr_pin, 1, true);
-
-    pio_sm_config c = st7789_8080_program_get_default_config(offset);
-
-    // Map "out pins" 8 data pins
-    sm_config_set_out_pins(&c, data_pin_base, 8);
-
-    // Map sideset pin
-    sm_config_set_sideset_pins(&c, wr_pin);
-
-    // Shift settings: push 8 bits from FIFO -> OSR at a time
-    sm_config_set_out_shift(&c, false, true, 8);
-
-    // Clock divider (controls PIO speed)
-    sm_config_set_clkdiv(&c, PIO_CLOCK_DIVIDER);
-
-    // Initialize SM with this config
-    pio_sm_init(pio, sm, offset, &c);
-    pio_sm_set_enabled(pio, sm, true);
 }
