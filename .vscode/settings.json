@@ -43,6 +43,7 @@
         "st7789_8080_driver.h": "c",
         "pio.h": "c",
         "led_driver.h": "c",
-        "led_blink.pio.h": "c"
+        "led_blink.pio.h": "c",
+        "stdio.h": "c"
     }
 }

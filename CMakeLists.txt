@@ -39,12 +39,9 @@ add_executable(picOS
     picOS.c
     drivers/st7789_8080_driver.c
     drivers/test/button_driver.c
-    drivers/test/led_driver.c
     )
 
 pico_generate_pio_header(picOS ${CMAKE_CURRENT_LIST_DIR}/drivers/st7789_8080.pio)
-pico_generate_pio_header(picOS ${CMAKE_CURRENT_LIST_DIR}/drivers/test/led.pio)
-pico_generate_pio_header(picOS ${CMAKE_CURRENT_LIST_DIR}/drivers/test/led_blink.pio)
 
 pico_enable_stdio_usb(picOS 1)
 pico_enable_stdio_uart(picOS 0)

@@ -4,8 +4,8 @@
 .side_set 1
 
 .wrap_target
-;   pull      block side 1      ; pull a word from the TX FIFO (from C or DMA). "block" means wait if empty.
-    out pins, 8     side 1      ; shift 8 bits from the OSR (output shift register) to the data pins
+    pull      block side 1      ; pull a word from the TX FIFO (from C or DMA). "block" means wait if empty.
+    out pins, 32    side 1      ; shift 8 bits from the OSR (output shift register) to the data pins
     nop             side 0  [1] ; output low on WR (assert)
     nop             side 1  [2] ; wait for write cycle
 .wrap
@@ -16,12 +16,6 @@
                                                 uint data_pin_base, uint data_pin_count, 
                                                 uint wr_pin, float clock_div)
     {
-        // Configure 8 consecutive pins for data
-        pio_sm_set_consecutive_pindirs(pio, sm, data_pin_base, data_pin_count, true);
-
-        // Configure sideset pin (WR)
-        pio_sm_set_consecutive_pindirs(pio, sm, wr_pin, 1, true);
-
         pio_sm_config c = st7789_8080_program_get_default_config(offset);
 
         // Map "out pins" 8 data pins
@@ -30,8 +24,14 @@
         // Map sideset pin
         sm_config_set_sideset_pins(&c, wr_pin);
 
+        // Configure 8 consecutive pins for data
+        pio_sm_set_consecutive_pindirs(pio, sm, data_pin_base, data_pin_count, true);
+
+        // Configure sideset pin (WR)
+        pio_sm_set_consecutive_pindirs(pio, sm, wr_pin, 1, true);
+
         // Shift settings: push 8 bits from FIFO -> OSR at a time
-        sm_config_set_out_shift(&c, false, true, 8);
+        sm_config_set_out_shift(&c, false, false, 32);
 
         // Clock divider (controls PIO speed)
         sm_config_set_clkdiv(&c, clock_div);

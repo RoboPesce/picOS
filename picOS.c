@@ -1,10 +1,10 @@
-#include "pico/stdlib.h"
 #include <stdio.h>
+#include "pico/stdlib.h"
 #include "drivers/st7789_8080_driver.h"
 #include "drivers/test/button_driver.h"
-#include "drivers/test/led_driver.h"
 
-#include "led_blink.pio.h"
+#define ENABLE_HEARTBEAT
+#define DO_ANIMATION
 
 InputState mouse_position;
 
@@ -12,50 +12,30 @@ int main()
 {
     stdio_init_all();
 
-    # define LED_PIN 25
-    PIO pio = pio0;
-    uint sm = 0;
-
-    // Load program into PIO memory
-    uint offset = pio_add_program(pio, &led_blink_program);
-
-    // Get default config
-    pio_sm_config c = led_blink_program_get_default_config(offset);
-
-    // Configure pins
-    sm_config_set_out_pins(&c, LED_PIN, 1);
-    pio_gpio_init(pio, LED_PIN);
-    pio_sm_set_consecutive_pindirs(pio, sm, LED_PIN, 1, true); // output
-    //sm_config_set_clkdiv(&c, 500000.0f);
-    sm_config_set_out_shift(&c, false, false, 32);
-
-    // Initialize and start state machine
-    pio_sm_init(pio, sm, offset, &c);
-    pio_sm_set_enabled(pio, sm, true);
-
-    while (1) {        
-        pio_sm_put_blocking(pio, sm, 0xFFFFFFFF);
-        sleep_ms(500);
-        pio_sm_put_blocking(pio, sm, 0x00000000);
-        sleep_ms(500);
-        printf("toggled led");
-    }
-
     //button_init();
-    //st7789_8080_init();
-    led_driver_init();
+    st7789_8080_init();
+    //printf("st7789_8080_init called\n");
 
     //mouse_position.vertical = NUM_ROWS / 2;
     //mouse_position.horizontal = NUM_COLS / 2;
 
-    //uint8_t color_shift = 0;
+    #ifdef ENABLE_HEARTBEAT
+    #define LED_PIN 25
+    gpio_init(LED_PIN);
+    gpio_set_dir(LED_PIN, GPIO_OUT);
+    #endif
     
     while (true)
     {
+        //printf("main loop\n");
         // Draw animation
 
-        //clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
+        #ifdef DO_ANIMATION
+        static uint8_t color_shift = 0;
+        clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
+        color_shift++;
         //clear_framebuffer(255, 255, 255);
+        #endif
 
         // Move mouse
         /*
@@ -70,15 +50,19 @@ int main()
         write_pixel_to_framebuffer(mouse_position.vertical, mouse_position.horizontal, 0, 0, 0);
         */
 
-        //draw_framebuffer();
-
-        //color_shift++;
+        #ifdef DO_ANIMATION
+        draw_framebuffer();
+        #endif
 
         //static uint8_t counter = 0;
         //if ((counter += 7) % 9 == 0) printf("Colorshift: %d\n", color_shift);
 
-        toggle_led();
-        sleep_ms(500);
+        #ifdef ENABLE_HEARTBEAT
+        static bool led_on = true;
+        gpio_put(LED_PIN, led_on);
+        led_on = !led_on;
+        sleep_ms(2500);
+        #endif
     }
 
     /*
