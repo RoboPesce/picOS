@@ -5,7 +5,7 @@
 #include "st7789_8080_driver.h"
 #include "st7789_8080.pio.h"
 
-#define PIO_CLOCK_DIVIDER 3.0f
+#define PIO_CLOCK_DIVIDER 2.0f
 #define POST_COMMAND_REST_MS 20 // Minimum: 5 ms. Raise in case of instability
 
 #define DATA_PIN_BASE 0 // Starting GPIO pin for data pins (GP0-GP7)
@@ -45,20 +45,24 @@ void st7789_8080_init()
     uint offset = pio_add_program(pio, &st7789_8080_program);
     st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, WR_PIN);
 
+    /*
     // Initialize pins
     for (int pin = DATA_PIN_BASE; pin < DATA_PIN_BASE + DATA_PIN_COUNT; ++pin) 
     {
         gpio_init(pin);
         gpio_set_dir(pin, GPIO_OUT);
     }
+    */
 
     gpio_init(BL_PIN);
     gpio_set_dir(BL_PIN, GPIO_OUT);
     gpio_init(DC_PIN);
     gpio_set_dir(DC_PIN, GPIO_OUT);
+    /* Set by state machine
     gpio_init(WR_PIN);
     gpio_set_dir(WR_PIN, GPIO_OUT);
     gpio_init(CS_PIN);
+    */
     gpio_set_dir(CS_PIN, GPIO_OUT);
     gpio_init(RST_PIN);
     gpio_set_dir(RST_PIN, GPIO_OUT);
@@ -66,14 +70,15 @@ void st7789_8080_init()
     // Idle states
     gpio_put(BL_PIN, 1);
     gpio_put(CS_PIN, 1);
-    gpio_put(WR_PIN, 1);
+    //gpio_put(WR_PIN, 1);
     gpio_put(DC_PIN, 1);
     
-    // Reset sequence
+    // Reset sequence. Min pulse duration: 10 us
+    int reset_pulse_duration = 25;
     gpio_put(RST_PIN, 0);
-    sleep_ms(50);
+    sleep_us(reset_pulse_duration);
     gpio_put(RST_PIN, 1);
-    sleep_ms(50);
+    sleep_us(reset_pulse_duration);
 
     // Keep chip select on for remainder of session
     gpio_put(CS_PIN, 0);

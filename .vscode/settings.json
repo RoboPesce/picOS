@@ -39,6 +39,8 @@
     "files.associations": {
         "random": "c",
         "cstdint": "c",
-        "button_driver.h": "c"
+        "button_driver.h": "c",
+        "st7789_8080_driver.h": "c",
+        "pio.h": "c"
     }
 }

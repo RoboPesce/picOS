@@ -1,7 +1,7 @@
 #include "pico/stdlib.h"
 #include <stdio.h>
 #include "drivers/st7789_8080_driver.h"
-#include "drivers/button_driver.h"
+#include "drivers/test/button_driver.h"
 
 InputState mouse_position;
 
@@ -15,12 +15,18 @@ int main()
     mouse_position.horizontal = NUM_COLS / 2;
 
     uint8_t color_shift = 0;
+
+    gpio_init(25);
+    gpio_set_dir(25, GPIO_OUT);
+    gpio_put(25, 1);
+    int led_on = 1;
     
     while (true)
     {
         // Draw animation
 
-        clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
+        //clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
+        clear_framebuffer(255, 255, 255);
 
         // Move mouse
         /*
@@ -41,6 +47,12 @@ int main()
 
         //static uint8_t counter = 0;
         //if ((counter += 7) % 9 == 0) printf("Colorshift: %d\n", color_shift);
+
+        /*
+        led_on = led_on ? 0 : 1;
+        gpio_put(25, led_on);
+        sleep_ms(500);
+        */
     }
 
     /*
