@@ -1,0 +1,29 @@
+.program led
+
+.wrap_target
+    out pins, 1
+.wrap
+
+% c-sdk {
+
+    static inline void led_program_init(PIO pio, uint sm, uint offset, uint led_pin, float clock_divider)
+    {
+        pio_sm_set_consecutive_pindirs(pio, sm, led_pin, 1, true);
+
+        pio_sm_config c = led_program_get_default_config(offset);
+
+        // Map "out pins"
+        sm_config_set_out_pins(&c, led_pin, 1);
+
+        // Shift settings: push 1 bit from FIFO -> OSR at a time
+        sm_config_set_out_shift(&c, false, true, 1);
+
+        // Clock divider (controls PIO speed)
+        sm_config_set_clkdiv(&c, clock_divider);
+
+        // Initialize SM with this config
+        pio_sm_init(pio, sm, offset, &c);
+        pio_sm_set_enabled(pio, sm, true);
+    }
+
+%}

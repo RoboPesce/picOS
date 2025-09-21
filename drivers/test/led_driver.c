@@ -5,29 +5,18 @@
 #define PIO_CLOCK_DIVIDER 1.0f
 #define LED_PIN 25
 
-PIO pio = pio1;
-int sm = 0;
+static PIO pio = pio1;
+static int sm = 0;
 
-static inline void led_program_init(PIO pio, uint sm, uint offset, uint led_pin)
+void led_driver_init()
 {
-    // Configure sideset pin (WR)
-    pio_sm_set_consecutive_pindirs(pio, sm, led_pin, 1, true);
+    uint offset = pio_add_program(pio, &led_program);
+    led_program_init(pio, sm, offset, LED_PIN, PIO_CLOCK_DIVIDER);
+}
 
-    pio_sm_config c = st7789_8080_program_get_default_config(offset);
-
-    // Map "out pins" 8 data pins
-    sm_config_set_out_pins(&c, data_pin_base, 8);
-
-    // Map sideset pin
-    sm_config_set_sideset_pins(&c, wr_pin);
-
-    // Shift settings: push 8 bits from FIFO -> OSR at a time
-    sm_config_set_out_shift(&c, false, true, 8);
-
-    // Clock divider (controls PIO speed)
-    sm_config_set_clkdiv(&c, PIO_CLOCK_DIVIDER);
-
-    // Initialize SM with this config
-    pio_sm_init(pio, sm, offset, &c);
-    pio_sm_set_enabled(pio, sm, true);
+void toggle_led()
+{
+    static int led_on = 0;
+    pio_sm_put_blocking(pio, sm, led_on);
+    led_on = !led_on;
 }

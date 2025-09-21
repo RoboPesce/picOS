@@ -1,0 +1,5 @@
+.program led_blink
+.wrap_target
+    pull      block           ; wait for a 32-bit value from FIFO
+    out pins, 32              ; shift the LSB of OSR to the pin
+.wrap

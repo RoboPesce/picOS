@@ -81,15 +81,15 @@ void st7789_8080_init()
     gpio_put(CS_PIN, 0);
 
     write_command(0x01); // Software reset
-    sleep_ms(POST_COMMAND_REST_MS);
+    sleep_ms(150); // Initialized to sleep in mode, must sleep 120 ms after resetting in sleep in
 
     write_command(0x11); // Sleep out (exit low power mode)
-    sleep_ms(POST_COMMAND_REST_MS);
+    sleep_ms(10); // Must sleep 5 ms after sleep out before sending further commands
 
     write_command(0x29); // Display on
 
     write_command(0x3A); // COLMOD
-    write_data_single(0x05); // Use 16 bit RGB565 format
+    write_data_single(0x55); // Use 16 bit RGB565 format
 
     // write_command(0x21); // INVON, for testing
 
