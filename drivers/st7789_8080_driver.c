@@ -105,7 +105,7 @@ void st7789_8080_init()
 void draw_framebuffer()
 {
     write_command(0x2C); // RAMWR
-    //write_data((const uint8_t *)framebuffer, FRAMEBUFFER_SIZE_BYTES);
+    write_data((const uint8_t *)framebuffer, FRAMEBUFFER_SIZE_BYTES);
 }
 
 void write_pixel_to_framebuffer(uint16_t row, uint16_t col, uint8_t r, uint8_t g, uint8_t b)
