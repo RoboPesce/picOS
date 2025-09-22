@@ -1,6 +1,6 @@
 .program st7789_8080
 
-; 8 pins for data, and WR pin via sideset
+; 8 pins for data + 1 for DC, and WR pin via sideset
 .side_set 1
 
 .wrap_target
@@ -18,7 +18,7 @@
     {
         pio_sm_config c = st7789_8080_program_get_default_config(offset);
 
-        // Configure 8-bit bus pins
+        // Configure 8-bit bus pins and DC
         sm_config_set_out_pins(&c, data_pin_base, data_pin_count);
         for (uint pin = data_pin_base; pin < data_pin_base + data_pin_count; ++pin)
             pio_gpio_init(pio, pin);

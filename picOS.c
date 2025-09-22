@@ -3,8 +3,9 @@
 #include "drivers/st7789_8080_driver.h"
 #include "drivers/test/button_driver.h"
 
-#define ENABLE_HEARTBEAT
+//#define ENABLE_HEARTBEAT
 #define DO_ANIMATION
+#define DO_STATIC_COLOR
 
 InputState mouse_position;
 
@@ -34,8 +35,10 @@ int main()
         static uint8_t color_shift = 0;
         clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
         color_shift++;
-        //clear_framebuffer(255, 255, 255);
+        #elif DO_STATIC_COLOR
+        clear_framebuffer(0, 255, 0);
         #endif
+
 
         // Move mouse
         /*

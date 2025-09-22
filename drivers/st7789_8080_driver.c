@@ -11,9 +11,9 @@
 
 #define DATA_PIN_BASE 0 // Starting GPIO pin for data pins (GP0-GP7)
 #define DATA_PIN_COUNT 8 // Number of data pins
-#define BL_PIN 8 // Backlight control pin
-#define WR_PIN 9 // Write pin
-#define DC_PIN 10 // Data/Command pin
+#define DC_PIN 8 // Data/Command pin
+#define BL_PIN 9 // Backlight control pin
+#define WR_PIN 10 // Write pin
 #define CS_PIN 11 // Chip Select pin
 #define RST_PIN 12 // Reset pin
 // Note: RD pin (read) is not used, tied to VCC
@@ -33,15 +33,17 @@ void write_data(const uint8_t *data, size_t len);
 uint16_t rgb888_to_565(uint8_t r, uint8_t g, uint8_t b)
 {
     uint16_t color = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
-    uint16_t endian = ((color >> 8) & 0x00FF) | ((color << 8) & 0xFF00); // The masks should be redundant, but we want to be sure
-    return endian;
+    //uint16_t endian = ((color >> 8) & 0x00FF) | ((color << 8) & 0xFF00); // The masks should be redundant, but we want to be sure
+    //return endian;
+    return color;
 }
 
 void st7789_8080_init() 
 {
+    sleep_ms(100);
     // Initialize PIO
     uint offset = pio_add_program(pio, &st7789_8080_program);
-    st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, DATA_PIN_COUNT, WR_PIN, PIO_CLOCK_DIVIDER);
+    st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, DATA_PIN_COUNT + 1 /* Include DC */, WR_PIN, PIO_CLOCK_DIVIDER);
 
     /*
     // Initialize pins
@@ -54,13 +56,7 @@ void st7789_8080_init()
 
     gpio_init(BL_PIN);
     gpio_set_dir(BL_PIN, GPIO_OUT);
-    gpio_init(DC_PIN);
-    gpio_set_dir(DC_PIN, GPIO_OUT);
-    /* Set by state machine
-    gpio_init(WR_PIN);
-    gpio_set_dir(WR_PIN, GPIO_OUT);
     gpio_init(CS_PIN);
-    */
     gpio_set_dir(CS_PIN, GPIO_OUT);
     gpio_init(RST_PIN);
     gpio_set_dir(RST_PIN, GPIO_OUT);
@@ -68,8 +64,6 @@ void st7789_8080_init()
     // Idle states
     gpio_put(BL_PIN, 1);
     gpio_put(CS_PIN, 1);
-    //gpio_put(WR_PIN, 1);
-    gpio_put(DC_PIN, 1);
     
     // Reset sequence. Min pulse duration: 10 us
     int reset_pulse_duration = 25;
@@ -122,23 +116,26 @@ void clear_framebuffer(uint8_t r, uint8_t g, uint8_t b)
 
 void write_command(uint8_t cmd)
 {
-    gpio_put(DC_PIN, 0);
-    pio_sm_put_blocking(pio, sm, cmd);
+    uint32_t cmd_ext = cmd;
+    pio_sm_put_blocking(pio, sm, cmd_ext);
 }
 
 void write_data_single(uint8_t data) 
 {
-    gpio_put(DC_PIN, 1);
-    pio_sm_put_blocking(pio, sm, data);
+    uint32_t data_ext = (1 << 8) | ((uint32_t) data); // Set 9th pin (DC) to 1
+    pio_sm_put_blocking(pio, sm, data_ext);
 }
 
 void write_data(const uint8_t *data, size_t len)
 {
-    gpio_put(DC_PIN, 1);
-
     // TESTING START
 
-    for (size_t i = 0; i < len; ++i) pio_sm_put_blocking(pio, sm, data[i]);
+    for (size_t i = 0; i < len; ++i) 
+    {
+        
+        uint32_t data_ext = (1 << 8) | ((uint32_t) data[i]); // Set 9th pin (DC) to 1
+        pio_sm_put_blocking(pio, sm, data_ext);
+    }
 
     return;
 
