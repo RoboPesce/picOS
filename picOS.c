@@ -22,8 +22,11 @@ int main()
 
     #ifdef ENABLE_HEARTBEAT
     #define LED_PIN 25
+    #define HEARTBEAT_INTERVAL_MS 2500
     gpio_init(LED_PIN);
     gpio_set_dir(LED_PIN, GPIO_OUT);
+    uint32_t last_toggle = to_ms_since_boot(get_absolute_time());
+    static bool led_on = true;
     #endif
     
     while (true)
@@ -60,11 +63,13 @@ int main()
         //static uint8_t counter = 0;
         //if ((counter += 7) % 9 == 0) printf("Colorshift: %d\n", color_shift);
 
-        #ifdef ENABLE_HEARTBEAT
-        static bool led_on = true;
-        gpio_put(LED_PIN, led_on);
-        led_on = !led_on;
-        sleep_ms(2500);
+        #ifdef ENABLE_HEARTBEAT        
+        uint32_t now = to_ms_since_boot(get_absolute_time());
+        if (now - last_toggle >= HEARTBEAT_INTERVAL_MS) {
+            led_on = !led_on;
+            gpio_put(LED_PIN, led_on);
+            last_toggle = now;
+        }
         #endif
     }
 

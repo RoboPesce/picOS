@@ -132,7 +132,6 @@ void write_data(const uint8_t *data, size_t len)
 
     for (size_t i = 0; i < len; ++i) 
     {
-        
         uint32_t data_ext = (1 << 8) | ((uint32_t) data[i]); // Set 9th pin (DC) to 1
         pio_sm_put_blocking(pio, sm, data_ext);
     }
