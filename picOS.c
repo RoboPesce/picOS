@@ -29,7 +29,7 @@ int main()
     static bool led_on = true;
     #endif
 
-    uint32_t last_reset = to_ms_since_boot(get_absolute_time());
+    uint32_t last_changed = to_ms_since_boot(get_absolute_time());
     
     while (true)
     {
@@ -56,7 +56,8 @@ int main()
             }
         }
         #elif defined(DO_STATIC_COLOR)
-        clear_framebuffer(0, 0, 255);
+        static Color color = {0, 0, 255}; 
+        clear_framebuffer(color.r, color.g, color.b);
         #endif
 
         // Move mouse
@@ -84,10 +85,13 @@ int main()
             gpio_put(LED_PIN, led_on);
             last_toggle = now;
         }
-        if (now - last_reset >= 5000)
+        #define CHANGE_COLOR_EVERY_MS 500
+        if (now - last_changed >= CHANGE_COLOR_EVERY_MS)
         {
-            //st7789_8080_init();
-            last_reset = now;
+            color.r += 11;
+            color.g += 21;
+            color.b += 50;
+            last_changed = now;
         }
         #endif
     }
