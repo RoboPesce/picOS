@@ -6,7 +6,7 @@
 #include "st7789_8080_driver.h"
 #include "st7789_8080.pio.h"
 
-#define PIO_CLOCK_DIVIDER 4.0f
+#define PIO_CLOCK_DIVIDER 100.0f
 #define POST_COMMAND_REST_MS 20 // Minimum: 5 ms. Raise in case of instability
 
 #define DATA_PIN_BASE 0 // Starting GPIO pin for data pins (GP0-GP7)
@@ -57,12 +57,10 @@ void st7789_8080_init()
     
     // Reset sequence. Min pulse duration: 10 us
     int reset_pulse_duration = 25;
-    gpio_put(RST_PIN, 1);
-    sleep_us(reset_pulse_duration);
     gpio_put(RST_PIN, 0);
     sleep_us(reset_pulse_duration);
     gpio_put(RST_PIN, 1);
-    sleep_us(reset_pulse_duration);
+    sleep_us(reset_pulse_duration * 5);
 
     // Keep chip select on for remainder of session
     gpio_put(CS_PIN, 0);
@@ -75,10 +73,11 @@ void st7789_8080_init()
 
     write_command(0x29); // Display on
 
-    write_command(0x3A); // COLMOD
+    write_command(0x3A); // COLMOD, set color data format
     write_data_single(0x55); // Use 16 bit RGB565 format
 
-    // write_command(0x21); // INVON, for testing
+    write_command(0x21); // INVON, turn on screen inversion. This may depend on your screen.
+                         // If your colors are inverted, remove this command or use 0x20 (INVOFF).
 
     // No need to configure CASET/RASET as they default to the whole screen.
     // Future todo: only draw updated surface?

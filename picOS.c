@@ -56,7 +56,7 @@ int main()
             }
         }
         #elif defined(DO_STATIC_COLOR)
-        static Color color = {0, 0, 255}; 
+        static Color color = {0, 255, 0}; 
         clear_framebuffer(color.r, color.g, color.b);
         #endif
 
