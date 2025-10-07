@@ -6,7 +6,7 @@
 #include "st7789_8080_driver.h"
 #include "st7789_8080.pio.h"
 
-#define PIO_CLOCK_DIVIDER 2.0f
+#define PIO_CLOCK_DIVIDER 4.0f
 #define POST_COMMAND_REST_MS 20 // Minimum: 5 ms. Raise in case of instability
 
 #define DATA_PIN_BASE 0 // Starting GPIO pin for data pins (GP0-GP7)
@@ -33,26 +33,16 @@ void write_data(const uint8_t *data, size_t len);
 uint16_t rgb888_to_565(uint8_t r, uint8_t g, uint8_t b)
 {
     uint16_t color = ((r & 0xF8) << 8) | ((g & 0xFC) << 3) | (b >> 3);
-    //uint16_t endian = ((color >> 8) & 0x00FF) | ((color << 8) & 0xFF00); // The masks should be redundant, but we want to be sure
-    //return endian;
-    return color;
+    uint16_t endian = ((color >> 8) & 0x00FF) | ((color << 8) & 0xFF00); // The masks should be redundant, but we want to be sure
+    return endian;
+    //return color;
 }
 
 void st7789_8080_init() 
 {
-    sleep_ms(100);
     // Initialize PIO
     uint offset = pio_add_program(pio, &st7789_8080_program);
     st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, DATA_PIN_COUNT + 1 /* Include DC */, WR_PIN, PIO_CLOCK_DIVIDER);
-
-    /*
-    // Initialize pins
-    for (int pin = DATA_PIN_BASE; pin < DATA_PIN_BASE + DATA_PIN_COUNT; ++pin) 
-    {
-        gpio_init(pin);
-        gpio_set_dir(pin, GPIO_OUT);
-    }
-    */
 
     gpio_init(BL_PIN);
     gpio_set_dir(BL_PIN, GPIO_OUT);
@@ -67,6 +57,8 @@ void st7789_8080_init()
     
     // Reset sequence. Min pulse duration: 10 us
     int reset_pulse_duration = 25;
+    gpio_put(RST_PIN, 1);
+    sleep_us(reset_pulse_duration);
     gpio_put(RST_PIN, 0);
     sleep_us(reset_pulse_duration);
     gpio_put(RST_PIN, 1);

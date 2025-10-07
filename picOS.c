@@ -3,8 +3,8 @@
 #include "drivers/st7789_8080_driver.h"
 #include "drivers/test/button_driver.h"
 
-//#define ENABLE_HEARTBEAT
-#define DO_ANIMATION
+#define ENABLE_HEARTBEAT
+//#define DO_ANIMATION
 #define DO_STATIC_COLOR
 
 InputState mouse_position;
@@ -28,6 +28,8 @@ int main()
     uint32_t last_toggle = to_ms_since_boot(get_absolute_time());
     static bool led_on = true;
     #endif
+
+    uint32_t last_reset = to_ms_since_boot(get_absolute_time());
     
     while (true)
     {
@@ -36,12 +38,26 @@ int main()
 
         #ifdef DO_ANIMATION
         static uint8_t color_shift = 0;
-        clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
+        //clear_framebuffer(color_shift, color_shift + 100, color_shift + 200);
         color_shift++;
-        #elif DO_STATIC_COLOR
-        clear_framebuffer(0, 255, 0);
-        #endif
 
+        uint16_t row = 0; 
+        uint16_t col = 0;
+
+        for (; row < 320; ++row)
+        {
+            for (; col < 240; ++col)
+            {
+                uint8_t r = ((row + color_shift) % 320) * 256 / 320;
+                uint8_t g = ((row + col + color_shift) % (320 + 240)) * 256 / (320 + 240);
+                uint8_t b = ((col + color_shift) % 240) * 256 / 240;
+
+                write_pixel_to_framebuffer(row, col, r, g, b);
+            }
+        }
+        #elif defined(DO_STATIC_COLOR)
+        clear_framebuffer(0, 0, 255);
+        #endif
 
         // Move mouse
         /*
@@ -56,19 +72,22 @@ int main()
         write_pixel_to_framebuffer(mouse_position.vertical, mouse_position.horizontal, 0, 0, 0);
         */
 
-        #ifdef DO_ANIMATION
+        #if defined(DO_ANIMATION) || defined(DO_STATIC_COLOR)
         draw_framebuffer();
         #endif
 
-        //static uint8_t counter = 0;
-        //if ((counter += 7) % 9 == 0) printf("Colorshift: %d\n", color_shift);
-
         #ifdef ENABLE_HEARTBEAT        
         uint32_t now = to_ms_since_boot(get_absolute_time());
-        if (now - last_toggle >= HEARTBEAT_INTERVAL_MS) {
+        if (now - last_toggle >= HEARTBEAT_INTERVAL_MS)
+        {
             led_on = !led_on;
             gpio_put(LED_PIN, led_on);
             last_toggle = now;
+        }
+        if (now - last_reset >= 5000)
+        {
+            //st7789_8080_init();
+            last_reset = now;
         }
         #endif
     }
