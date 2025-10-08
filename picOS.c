@@ -6,6 +6,7 @@
 #define ENABLE_HEARTBEAT
 //#define DO_ANIMATION
 #define DO_STATIC_COLOR
+//#define WATCHDOG_RESTART
 
 InputState mouse_position;
 
@@ -30,6 +31,9 @@ int main()
     #endif
 
     uint32_t last_changed = to_ms_since_boot(get_absolute_time());
+    #ifdef WATCHDOG_RESTART
+    uint32_t last_reset   = to_ms_since_boot(get_absolute_time());
+    #endif
     
     while (true)
     {
@@ -85,13 +89,20 @@ int main()
             gpio_put(LED_PIN, led_on);
             last_toggle = now;
         }
-        #define CHANGE_COLOR_EVERY_MS 500
+        #define CHANGE_COLOR_EVERY_MS 100
         if (now - last_changed >= CHANGE_COLOR_EVERY_MS)
         {
-            color.r += 11;
-            color.g += 21;
-            color.b += 50;
+            color.r += 17;
+            color.g += 23;
+            color.b += 31;
             last_changed = now;
+        }
+        #endif
+        #ifdef WATCHDOG_RESTART
+        if (now - last_reset >= 5000)
+        {
+            st7789_8080_init();
+            last_reset = now;
         }
         #endif
     }

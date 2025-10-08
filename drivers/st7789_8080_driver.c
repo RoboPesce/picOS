@@ -6,7 +6,7 @@
 #include "st7789_8080_driver.h"
 #include "st7789_8080.pio.h"
 
-#define PIO_CLOCK_DIVIDER 100.0f
+#define PIO_CLOCK_DIVIDER 2.0f
 #define POST_COMMAND_REST_MS 20 // Minimum: 5 ms. Raise in case of instability
 
 #define DATA_PIN_BASE 0 // Starting GPIO pin for data pins (GP0-GP7)
@@ -41,8 +41,13 @@ uint16_t rgb888_to_565(uint8_t r, uint8_t g, uint8_t b)
 void st7789_8080_init() 
 {
     // Initialize PIO
-    uint offset = pio_add_program(pio, &st7789_8080_program);
-    st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, DATA_PIN_COUNT + 1 /* Include DC */, WR_PIN, PIO_CLOCK_DIVIDER);
+    static bool has_pio_init = false;
+    if (!has_pio_init)
+    {
+        uint offset = pio_add_program(pio, &st7789_8080_program);
+        st7789_8080_program_init(pio, sm, offset, DATA_PIN_BASE, DATA_PIN_COUNT + 1 /* Include DC */, WR_PIN, PIO_CLOCK_DIVIDER);
+        has_pio_init = true;
+    }
 
     gpio_init(BL_PIN);
     gpio_set_dir(BL_PIN, GPIO_OUT);
@@ -79,12 +84,22 @@ void st7789_8080_init()
     write_command(0x21); // INVON, turn on screen inversion. This may depend on your screen.
                          // If your colors are inverted, remove this command or use 0x20 (INVOFF).
 
-    // No need to configure CASET/RASET as they default to the whole screen.
-    // Future todo: only draw updated surface?
-
-    // No need to configure MADCTL, defaults are sufficient
+    // No need to configure MADCTL, defaults are sufficient. But we do it just to be safe.
     write_command(0x36); // MADCTL
     write_data_single(0x00); // Bit 3 = 0: RGB order
+
+    // No need to configure CASET/RASET as they default to the whole screen. But we do it just to be safe.
+    // Future todo: only draw updated surface?
+    write_command(0x2A); // CASET
+    write_data_single(0x00);
+    write_data_single(0x00);
+    write_data_single(0x00);
+    write_data_single(0xEF);
+    write_command(0x2B); // RASET
+    write_data_single(0x00);
+    write_data_single(0x00);
+    write_data_single(0x01);
+    write_data_single(0x3F);
 }
 
 void draw_framebuffer()
