@@ -30,6 +30,7 @@ int main()
     static bool led_on = true;
     #endif
 
+    uint32_t last_drew_fb = to_ms_since_boot(get_absolute_time());
     uint32_t last_changed = to_ms_since_boot(get_absolute_time());
     #ifdef WATCHDOG_RESTART
     uint32_t last_reset   = to_ms_since_boot(get_absolute_time());
@@ -77,12 +78,18 @@ int main()
         write_pixel_to_framebuffer(mouse_position.vertical, mouse_position.horizontal, 0, 0, 0);
         */
 
+        uint32_t now = to_ms_since_boot(get_absolute_time());
+        
         #if defined(DO_ANIMATION) || defined(DO_STATIC_COLOR)
-        draw_framebuffer();
+        #define framerate 10
+        if (now - last_drew_fb >= (1.0 / framerate) * 1000)
+        {
+            draw_framebuffer();
+            last_drew_fb = now;
+        }
         #endif
 
         #ifdef ENABLE_HEARTBEAT        
-        uint32_t now = to_ms_since_boot(get_absolute_time());
         if (now - last_toggle >= HEARTBEAT_INTERVAL_MS)
         {
             led_on = !led_on;
@@ -93,7 +100,7 @@ int main()
         if (now - last_changed >= CHANGE_COLOR_EVERY_MS)
         {
             color.r += 17;
-            color.g += 23;
+            color.g -= 23;
             color.b += 31;
             last_changed = now;
         }

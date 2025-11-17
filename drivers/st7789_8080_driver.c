@@ -56,8 +56,6 @@ void st7789_8080_init()
     gpio_init(RST_PIN);
     gpio_set_dir(RST_PIN, GPIO_OUT);
 
-    // Idle states
-    gpio_put(BL_PIN, 1);
     gpio_put(CS_PIN, 1);
     
     // Reset sequence. Min pulse duration: 10 us
@@ -75,8 +73,6 @@ void st7789_8080_init()
 
     write_command(0x11); // Sleep out (exit low power mode)
     sleep_ms(10); // Must sleep 5 ms after sleep out before sending further commands
-
-    write_command(0x29); // Display on
 
     write_command(0x3A); // COLMOD, set color data format
     write_data_single(0x55); // Use 16 bit RGB565 format
@@ -100,6 +96,10 @@ void st7789_8080_init()
     write_data_single(0x00);
     write_data_single(0x01);
     write_data_single(0x3F);
+
+    write_command(0x29); // Display on
+
+    gpio_put(BL_PIN, 1); // Backlight on
 }
 
 void draw_framebuffer()

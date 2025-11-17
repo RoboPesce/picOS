@@ -44,6 +44,7 @@
         "pio.h": "c",
         "led_driver.h": "c",
         "led_blink.pio.h": "c",
-        "stdio.h": "c"
+        "stdio.h": "c",
+        "dma.h": "c"
     }
 }

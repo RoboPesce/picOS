@@ -5,7 +5,8 @@
 
 .wrap_target
     pull      block side 1      ; pull a word from the TX FIFO (from C or DMA). "block" means wait if empty.
-    out pins, 32    side 0      ; shift 8 bits from the OSR (output shift register) to the data pins
+    nop             side 0      ;
+    out pins, 9     side 0      ; shift 8 + 1 bits from the OSR (output shift register) to the data pins
     nop             side 0  [1] ; output low on WR (assert)
     nop             side 1  [2] ; wait for write cycle
 .wrap
@@ -31,7 +32,7 @@
         
         sm_config_set_clkdiv(&c, clock_div);
         // No autopull (we pull in ASM)
-        sm_config_set_out_shift(&c, false, false, 32);
+        sm_config_set_out_shift(&c, true, false, 32);
 
         // Initialize and start state machine
         pio_sm_init(pio, sm, offset, &c);
