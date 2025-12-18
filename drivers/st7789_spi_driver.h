@@ -1,10 +1,12 @@
 #pragma once
 
+#include "color.h"
+
 #define NUM_ROWS 320
 #define NUM_COLS 240
 #define NUM_PIXELS (NUM_ROWS * NUM_COLS)
 
-void st7789_init();
+void st7789_spi_init();
 
 // Sends the framebuffer to the screen. Use cautiously
 void draw_framebuffer();

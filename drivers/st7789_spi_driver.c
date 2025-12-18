@@ -1,6 +1,6 @@
 #include "pico/stdlib.h"
 #include "hardware/spi.h"
-#include "st7789_driver.h"
+#include "st7789_spi_driver.h"
 
 #define SPI_FREQUENCY_MH 30 // 10 is definitely stable, but somewhat slow. 30 seems to be rather stable. I think the pi pico maxes out at 40
 #define POST_COMMAND_REST_MS 20 // Minimum: 5 ms. Raise in case of instability
@@ -46,7 +46,7 @@ void write_data(const uint8_t *data, size_t len)
     gpio_put(CS_PIN, 1);
 }
 
-void st7789_init() 
+void st7789_spi_init() 
 {
     // Initialize SPI
     spi_init(spi0, SPI_FREQUENCY_MH * 1000 * 1000);

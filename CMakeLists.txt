@@ -38,6 +38,7 @@ pico_sdk_init()
 add_executable(picOS
     picOS.c
     drivers/st7789_8080_driver.c
+    #drivers/st7789_spi_driver.c
     drivers/test/button_driver.c
     )
 
@@ -47,7 +48,7 @@ pico_enable_stdio_usb(picOS 1)
 pico_enable_stdio_uart(picOS 0)
 
 # pull in common dependencies
-target_link_libraries(picOS pico_stdlib hardware_pio hardware_dma)
+target_link_libraries(picOS pico_stdlib hardware_spi hardware_pio hardware_dma)
 
 if (PICO_CYW43_SUPPORTED)
     target_link_libraries(picOS pico_cyw43_arch_none)

@@ -45,6 +45,7 @@
         "led_driver.h": "c",
         "led_blink.pio.h": "c",
         "stdio.h": "c",
-        "dma.h": "c"
+        "dma.h": "c",
+        "st7789_spi_driver.h": "c"
     }
 }

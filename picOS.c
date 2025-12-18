@@ -1,6 +1,13 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
+
+#define USE_8080 1
+
+#if USE_8080 == 1
 #include "drivers/st7789_8080_driver.h"
+#else
+#include "drivers/st7789_spi_driver.h"
+#endif
 #include "drivers/test/button_driver.h"
 
 #define ENABLE_HEARTBEAT
@@ -15,8 +22,11 @@ int main()
     stdio_init_all();
 
     //button_init();
+#if USE_8080 == 1
     st7789_8080_init();
-    //printf("st7789_8080_init called\n");
+#else
+    st7789_spi_init();
+#endif
 
     //mouse_position.vertical = NUM_ROWS / 2;
     //mouse_position.horizontal = NUM_COLS / 2;

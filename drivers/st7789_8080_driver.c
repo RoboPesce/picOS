@@ -66,7 +66,7 @@ void st7789_8080_init()
     sleep_us(reset_pulse_duration * 5);
 
     // Keep chip select on for remainder of session
-    gpio_put(CS_PIN, 0);
+    //
 
     write_command(0x01); // Software reset
     sleep_ms(150); // Initialized to sleep in mode, must sleep 120 ms after resetting in sleep in
@@ -122,25 +122,35 @@ void clear_framebuffer(uint8_t r, uint8_t g, uint8_t b)
 
 void write_command(uint8_t cmd)
 {
+    gpio_put(CS_PIN, 0); // testing
     uint32_t cmd_ext = cmd;
     pio_sm_put_blocking(pio, sm, cmd_ext);
+    sleep_ms(1); // testing
+    gpio_put(CS_PIN, 1); //testing
 }
 
 void write_data_single(uint8_t data) 
 {
+    gpio_put(CS_PIN, 0); // testing
     uint32_t data_ext = (1 << 8) | ((uint32_t) data); // Set 9th pin (DC) to 1
     pio_sm_put_blocking(pio, sm, data_ext);
+    sleep_ms(1); // testing
+    gpio_put(CS_PIN, 1); //testing
 }
 
 void write_data(const uint8_t *data, size_t len)
 {
     // TESTING START
+    gpio_put(CS_PIN, 0); // testing
 
     for (size_t i = 0; i < len; ++i) 
     {
         uint32_t data_ext = (1 << 8) | ((uint32_t) data[i]); // Set 9th pin (DC) to 1
         pio_sm_put_blocking(pio, sm, data_ext);
+
     }
+    sleep_ms(1); // testing
+    gpio_put(CS_PIN, 1); //testing
 
     return;
 
