@@ -3,7 +3,7 @@
 #include "hardware/pio.h"
 #include "hardware/structs/pio.h"
 #include "hardware/dma.h"
-#include "st7789_8080_driver.h"
+#include "st7789_driver.h"
 #include "st7789_8080.pio.h"
 
 #define PIO_CLOCK_DIVIDER 2.0f
@@ -38,7 +38,7 @@ uint16_t rgb888_to_565(uint8_t r, uint8_t g, uint8_t b)
     //return color;
 }
 
-void st7789_8080_init() 
+void st7789_init() 
 {
     // Initialize PIO
     static bool has_pio_init = false;

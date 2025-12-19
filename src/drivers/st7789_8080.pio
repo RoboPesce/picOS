@@ -7,8 +7,8 @@
     pull      block side 1      ; pull a word from the TX FIFO (from C or DMA). "block" means wait if empty.
     nop             side 0      ;
     out pins, 9     side 0      ; shift 8 + 1 bits from the OSR (output shift register) to the data pins
-    nop             side 0  [1] ; output low on WR (assert)
-    nop             side 1  [2] ; wait for write cycle
+    nop             side 0      ; output low on WR (assert)
+    nop             side 1      ; wait for write cycle
 .wrap
 
 % c-sdk {
