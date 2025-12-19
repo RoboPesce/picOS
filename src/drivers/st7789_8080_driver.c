@@ -77,8 +77,9 @@ void st7789_init()
     write_command(0x3A); // COLMOD, set color data format
     write_data_single(0x55); // Use 16 bit RGB565 format
 
-    write_command(0x21); // INVON, turn on screen inversion. This may depend on your screen.
-                         // If your colors are inverted, remove this command or use 0x20 (INVOFF).
+    write_command(0x20);   // INVOFF, turn off screen inversion.
+                           // Should be off by default. Depending on your screen, you may need to send INVON instead.
+    //write_command(0x21); // INVON, turn on screen inversion. This may depend on your screen.
 
     // No need to configure MADCTL, defaults are sufficient. But we do it just to be safe.
     write_command(0x36); // MADCTL

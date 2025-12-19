@@ -100,7 +100,7 @@ int main()
         if (now - last_changed >= CHANGE_COLOR_EVERY_MS)
         {
             color.r += 1;
-            color.g -= 1;
+            color.g += 1;
             color.b += 1;
             last_changed = now;
         }
