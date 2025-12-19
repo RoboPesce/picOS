@@ -96,12 +96,12 @@ int main()
             gpio_put(LED_PIN, led_on);
             last_toggle = now;
         }
-        #define CHANGE_COLOR_EVERY_MS 100
+        #define CHANGE_COLOR_EVERY_MS 0
         if (now - last_changed >= CHANGE_COLOR_EVERY_MS)
         {
-            color.r += 17;
-            color.g -= 23;
-            color.b += 31;
+            color.r += 1;
+            color.g -= 1;
+            color.b += 1;
             last_changed = now;
         }
         #endif
