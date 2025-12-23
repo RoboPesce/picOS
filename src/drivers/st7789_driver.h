@@ -5,6 +5,7 @@
 #define NUM_ROWS 320
 #define NUM_COLS 240
 #define NUM_PIXELS (NUM_ROWS * NUM_COLS)
+#define FRAMERATE 0 // Leave at 0 for unbounded framerate
 
 void st7789_init();
 

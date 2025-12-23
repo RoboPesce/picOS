@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "pico/stdlib.h"
 
+#include "kernel/core1.h"
+
 #include "drivers/st7789_driver.h"
 #include "drivers/test/button_driver.h"
 
@@ -14,9 +16,9 @@ InputState mouse_position;
 int main()
 {
     stdio_init_all();
+    start_core1();
 
     //button_init();
-    st7789_init();
 
     //mouse_position.vertical = NUM_ROWS / 2;
     //mouse_position.horizontal = NUM_COLS / 2;
@@ -30,7 +32,6 @@ int main()
     static bool led_on = true;
     #endif
 
-    uint32_t last_drew_fb = to_ms_since_boot(get_absolute_time());
     uint32_t last_changed = to_ms_since_boot(get_absolute_time());
     #ifdef WATCHDOG_RESTART
     uint32_t last_reset   = to_ms_since_boot(get_absolute_time());
@@ -79,15 +80,6 @@ int main()
         */
 
         uint32_t now = to_ms_since_boot(get_absolute_time());
-        
-        #if defined(DO_ANIMATION) || defined(DO_STATIC_COLOR)
-        #define framerate 1000
-        if (now - last_drew_fb >= (1.0 / framerate) * 1000)
-        {
-            draw_framebuffer();
-            last_drew_fb = now;
-        }
-        #endif
 
         #ifdef ENABLE_HEARTBEAT        
         if (now - last_toggle >= HEARTBEAT_INTERVAL_MS)
